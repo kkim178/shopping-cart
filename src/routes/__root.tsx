@@ -1,36 +1,25 @@
-  import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-  import { CartProvider } from "@/providers/cart-provider";
-  import { CartLink } from "@/components/cart-link";
+import { Link } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-store";
+import { ShoppingCart } from "lucide-react";
+import { cartStore } from "@/store/cart-store";
+import { Badge } from "@/components/ui/badge";
 
-  export const Route = createRootRoute({
-    component: RootLayout,
-  });
+export function CartLink() {
+  const totalItems = useStore(cartStore, (state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
 
-  function RootLayout() {
-    return (
-     <CartProvider>
-        <div className="min-h-screen bg-background text-foreground">
-          <header className="border-b">
-            <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-              <Link to="/" className="text-xl font-bold">
-                eStore
-              </Link>
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/"
-                  className="text-sm text-muted-foreground hover:text-foreground [&.active]:text-foreground"
-                >
-                  Products
-                </Link>
-
-               <CartLink />
-              </div>
-            </nav>
-          </header>
-          <main className="mx-auto max-w-5xl px-4 py-8">
-            <Outlet />
-          </main>
-        </div>
-     </CartProvider>
-    );
-  }
+  return (
+    <Link
+      to="/cart"
+      className="relative text-muted-foreground hover:text-foreground [&.active]:text-foreground"
+    >
+      <ShoppingCart className="h-5 w-5" />
+      {totalItems > 0 && (
+        <Badge className="absolute -top-2 -right-3 h-5 min-w-5 justify-center px-1 text-xs">
+          {totalItems}
+        </Badge>
+      )}
+    </Link>
+  );
+}
